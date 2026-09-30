@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить товар</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #333; }
+        .back { display: inline-block; margin-bottom: 20px; color: #3498db; text-decoration: none; }
+        .back:hover { text-decoration: underline; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #2c3e50; }
+        .form-input {
+            width: 100%; padding: 10px; border: 1px solid #ccc;
+            border-radius: 6px; font-size: 14px; box-sizing: border-box;
+        }
+        .form-input:focus { outline: none; border-color: #3498db; }
+
+        .errorlist {
+            list-style: none; padding: 8px 12px; margin: 6px 0 0;
+            background: #fdecea; color: #c0392b; border-radius: 6px;
+            font-size: 14px; border-left: 4px solid #e74c3c;
+        }
+
+        .error-summary {
+            background: #fdecea; color: #c0392b; padding: 12px 16px;
+            border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #e74c3c;
+        }
+
+        button {
+            background: #27ae60; color: white; border: none;
+            padding: 12px 24px; border-radius: 6px; cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #229954; }
+
+        .required { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <a href="{% url 'product_list' %}" class="back">← Назад к товарам</a>
+    <h1>➕ Добавить товар</h1>
+
+    {% if form.non_field_errors %}
+        <div class="error-summary">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                    {% if field.field.required %}<span class="required">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if field.help_text %}
+                    <small style="color: #888;">{{ field.help_text }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit">Сохранить товар</button>
+    </form>
+</body>
+</html>
