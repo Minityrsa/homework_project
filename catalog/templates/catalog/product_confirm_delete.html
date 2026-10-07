@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Удалить товар</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #c0392b; }
+        .back { display: inline-block; margin-bottom: 20px; color: #3498db; text-decoration: none; }
+        .back:hover { text-decoration: underline; }
+
+        .warning {
+            background: #fdecea; border-left: 4px solid #e74c3c;
+            padding: 16px 20px; border-radius: 6px; margin-bottom: 24px;
+        }
+        .warning p { margin: 8px 0; color: #2c3e50; }
+        .warning .product-name { font-weight: bold; font-size: 18px; }
+
+        .actions { display: flex; gap: 12px; }
+        .btn {
+            padding: 12px 24px; border: none; border-radius: 6px;
+            font-size: 16px; cursor: pointer; text-decoration: none;
+            display: inline-block;
+        }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-cancel { background: #95a5a6; color: white; }
+        .btn-cancel:hover { background: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <a href="{% url 'product_list' %}" class="back">← Назад к товарам</a>
+    <h1>🗑️ Удалить товар?</h1>
+
+    <div class="warning">
+        <p>Вы собираетесь удалить товар:</p>
+        <p class="product-name">«{{ product.name }}»</p>
+        <p>Цена: {{ product.price }} ₽</p>
+        <p><strong>Это действие нельзя отменить.</strong></p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="actions">
+            <button type="submit" class="btn btn-danger">Да, удалить</button>
+            <a href="{% url 'product_list' %}" class="btn btn-cancel">Отмена</a>
+        </div>
+    </form>
+</body>
+</html>
