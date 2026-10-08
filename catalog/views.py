@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Product
 from .forms import ProductForm
 
@@ -9,12 +10,15 @@ def product_list(request):
     return render(request, 'catalog/product_list.html', {'products': products})
 
 
+@login_required
 def product_add(request):
     """Страница добавления нового товара"""
     if request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            product.author = request.user
+            product.save()
             return redirect('product_list')
     else:
         form = ProductForm()
@@ -26,6 +30,7 @@ def product_add(request):
     })
 
 
+@login_required
 def product_edit(request, pk):
     """Страница редактирования товара"""
     product = get_object_or_404(Product, pk=pk)
@@ -45,6 +50,7 @@ def product_edit(request, pk):
     })
 
 
+@login_required
 def product_delete(request, pk):
     """Страница удаления товара с подтверждением"""
     product = get_object_or_404(Product, pk=pk)

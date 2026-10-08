@@ -7,55 +7,60 @@
         body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         h1 { color: #333; margin: 0; }
-        .btn-add {
-            background: #27ae60; color: white; text-decoration: none;
-            padding: 10px 20px; border-radius: 6px; font-size: 15px;
-        }
+        .nav { display: flex; gap: 10px; align-items: center; }
+        .btn { color: white; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; }
+        .btn-add { background: #27ae60; }
         .btn-add:hover { background: #229954; }
-
-        .product {
-            border: 1px solid #ddd; border-radius: 8px; padding: 15px;
-            margin-bottom: 15px;
-        }
+        .btn-profile { background: #3498db; }
+        .btn-profile:hover { background: #2980b9; }
+        .btn-login { background: #9b59b6; }
+        .btn-login:hover { background: #8e44ad; }
+        .btn-logout { background: #e74c3c; }
+        .btn-logout:hover { background: #c0392b; }
+        .product { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
         .product h3 { margin: 0 0 8px; color: #2c3e50; }
+        .author { color: #888; font-size: 13px; margin: 4px 0; }
         .price { color: #e74c3c; font-weight: bold; font-size: 18px; margin: 8px 0; }
-
         .actions { display: flex; gap: 10px; margin-top: 12px; }
-        .btn-sm {
-            padding: 6px 14px; border-radius: 5px; font-size: 14px;
-            text-decoration: none; display: inline-block; cursor: pointer;
-        }
+        .btn-sm { padding: 6px 14px; border-radius: 5px; font-size: 14px; text-decoration: none; display: inline-block; }
         .btn-edit { background: #f39c12; color: white; }
         .btn-edit:hover { background: #e67e22; }
         .btn-delete { background: #e74c3c; color: white; }
         .btn-delete:hover { background: #c0392b; }
-
         .empty { color: #888; font-style: italic; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🛒 Наши товары</h1>
-        <a href="{% url 'product_add' %}" class="btn-add">➕ Добавить товар</a>
+        <div class="nav">
+            {% if user.is_authenticated %}
+                <a href="{% url 'product_add' %}" class="btn btn-add">➕ Добавить</a>
+                <a href="{% url 'profile' %}" class="btn btn-profile">👤 {{ user.username }}</a>
+                <a href="{% url 'logout' %}" class="btn btn-logout">Выйти</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-login">🔑 Войти</a>
+                <a href="{% url 'register' %}" class="btn btn-add">📝 Регистрация</a>
+            {% endif %}
+        </div>
     </div>
-
     {% if products %}
         {% for product in products %}
             <div class="product">
                 <h3>{{ product.name }}</h3>
-                {% if product.description %}
-                    <p>{{ product.description }}</p>
-                {% endif %}
+                {% if product.description %}<p>{{ product.description }}</p>{% endif %}
+                {% if product.author %}<p class="author">Автор: {{ product.author.username }}</p>{% endif %}
                 <p class="price">{{ product.price }} ₽</p>
-
-                <div class="actions">
-                    <a href="{% url 'product_edit' product.pk %}" class="btn-sm btn-edit">✏️ Редактировать</a>
-                    <a href="{% url 'product_delete' product.pk %}" class="btn-sm btn-delete">🗑️ Удалить</a>
-                </div>
+                {% if user == product.author %}
+                    <div class="actions">
+                        <a href="{% url 'product_edit' product.pk %}" class="btn-sm btn-edit">✏️ Редактировать</a>
+                        <a href="{% url 'product_delete' product.pk %}" class="btn-sm btn-delete">🗑️ Удалить</a>
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
     {% else %}
-        <p class="empty">Пока товаров нет. Нажмите «Добавить товар», чтобы создать первый.</p>
+        <p class="empty">Пока товаров нет. {% if user.is_authenticated %}Нажмите «Добавить».{% else %}Войдите, чтобы добавить товар.{% endif %}</p>
     {% endif %}
 </body>
 </html>
