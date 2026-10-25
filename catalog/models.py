@@ -1,5 +1,41 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
+
+
+class Category(models.Model):
+    """Категория товаров"""
+    name = models.CharField(max_length=100, unique=True, verbose_name="Название")
+    slug = models.SlugField(max_length=100, unique=True, blank=True, verbose_name="Слаг")
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class Manufacturer(models.Model):
+    """Производитель товаров"""
+    name = models.CharField(max_length=200, verbose_name="Название")
+    country = models.CharField(max_length=100, verbose_name="Страна")
+    website = models.URLField(blank=True, verbose_name="Сайт")
+    description = models.TextField(blank=True, verbose_name="Описание")
+
+    class Meta:
+        verbose_name = "Производитель"
+        verbose_name_plural = "Производители"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Product(models.Model):
@@ -19,6 +55,22 @@ class Product(models.Model):
         on_delete=models.CASCADE,
         related_name='products',
         verbose_name="Продавец",
+        null=True,
+        blank=True,
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        related_name='products',
+        verbose_name="Категория",
+        null=True,
+        blank=True,
+    )
+    manufacturer = models.ForeignKey(
+        Manufacturer,
+        on_delete=models.SET_NULL,
+        related_name='products',
+        verbose_name="Производитель",
         null=True,
         blank=True,
     )

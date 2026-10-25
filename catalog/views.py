@@ -1,13 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Product
+from .models import Product, Category
 from .forms import ProductForm
 
 
 def product_list(request):
-    """Главная страница: список всех товаров"""
+    """Главная страница: список всех товаров + фильтр по категориям"""
     products = Product.objects.all()
-    return render(request, 'catalog/product_list.html', {'products': products})
+    categories = Category.objects.all()
+
+    category_slug = request.GET.get('category')
+    current_category = None
+    if category_slug:
+        current_category = get_object_or_404(Category, slug=category_slug)
+        products = products.filter(category=current_category)
+
+    return render(request, 'catalog/product_list.html', {
+        'products': products,
+        'categories': categories,
+        'current_category': current_category,
+    })
 
 
 @login_required

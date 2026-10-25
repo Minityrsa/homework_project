@@ -7,7 +7,7 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'image']
+        fields = ['name', 'description', 'price', 'image', 'category', 'manufacturer']
         widgets = {
             'name': forms.TextInput(attrs={
                 'placeholder': 'Например: Ноутбук',
@@ -24,12 +24,16 @@ class ProductForm(forms.ModelForm):
                 'min': '0',
                 'class': 'form-input',
             }),
+            'category': forms.Select(attrs={'class': 'form-input'}),
+            'manufacturer': forms.Select(attrs={'class': 'form-input'}),
         }
         labels = {
             'name': 'Название товара',
             'description': 'Описание',
             'price': 'Цена (₽)',
             'image': 'Изображение',
+            'category': 'Категория',
+            'manufacturer': 'Производитель',
         }
 
     def clean_name(self):
