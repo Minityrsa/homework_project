@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 from catalog import views
 
 urlpatterns = [
@@ -15,3 +17,6 @@ urlpatterns = [
     path('users/logout/', auth_views.LogoutView.as_view(next_page='product_list'), name='logout'),
     path('users/', include('users.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

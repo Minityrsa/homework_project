@@ -14,10 +14,11 @@ def product_list(request):
 def product_add(request):
     """Страница добавления нового товара"""
     if request.method == 'POST':
-        form = ProductForm(request.POST)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
-            product.author = request.user
+            product.seller = request.user
+            product.status = Product.Status.PENDING
             product.save()
             return redirect('product_list')
     else:
@@ -36,7 +37,7 @@ def product_edit(request, pk):
     product = get_object_or_404(Product, pk=pk)
 
     if request.method == 'POST':
-        form = ProductForm(request.POST, instance=product)
+        form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
             return redirect('product_list')

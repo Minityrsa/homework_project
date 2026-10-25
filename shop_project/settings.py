@@ -133,3 +133,6 @@ MAILERS = {
 
 LOGIN_REDIRECT_URL = 'profile'
 LOGIN_URL = 'login'
+# Медиафайлы (загруженные пользователями)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

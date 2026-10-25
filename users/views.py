@@ -22,5 +22,5 @@ def register(request):
 @login_required
 def profile(request):
     """Страница профиля пользователя"""
-    products = Product.objects.filter(author=request.user)
+    products = Product.objects.filter(seller=request.user)
     return render(request, 'users/profile.html', {'products': products})

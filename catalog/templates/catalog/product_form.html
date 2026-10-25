@@ -9,7 +9,7 @@
         .back { display: inline-block; margin-bottom: 20px; color: #3498db; text-decoration: none; }
         .form-group { margin-bottom: 18px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #2c3e50; }
-        .form-input {
+        .form-input, input[type="file"] {
             width: 100%; padding: 10px; border: 1px solid #ccc;
             border-radius: 6px; font-size: 14px; box-sizing: border-box;
         }
@@ -31,7 +31,7 @@
     <a href="{% url 'product_list' %}" class="back">← Назад к товарам</a>
     <h1>{{ title }}</h1>
 
-    <form method="post" novalidate>
+    <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         {% for field in form %}
             <div class="form-group">
