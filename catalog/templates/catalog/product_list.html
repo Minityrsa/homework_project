@@ -20,6 +20,12 @@
         }
         .category-chip:hover { background: #d5dbdb; }
         .category-chip.active { background: #3498db; color: white; }
+        .tag-chip {
+            display: inline-block; padding: 3px 10px; border-radius: 12px;
+            background: #e0e7ff; color: #3730a3; text-decoration: none;
+            font-size: 12px; margin-right: 4px;
+        }
+        .tag-chip:hover { background: #c7d2fe; }
         .product { border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; gap: 16px; }
         .product-image { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; background: #f0f0f0; flex-shrink: 0; }
         .product-info { flex: 1; }
@@ -61,6 +67,10 @@
         </div>
     {% endif %}
 
+    {% if current_tag %}
+        <p style="margin-bottom:16px; color:#555;">Фильтр по тегу: <strong>{{ current_tag.name }}</strong> · <a href="{% url 'product_list' %}">сбросить</a></p>
+    {% endif %}
+
     {% if products %}
         {% for product in products %}
             <div class="product">
@@ -77,6 +87,14 @@
                         <p class="meta">Производитель: {{ product.manufacturer.name }} ({{ product.manufacturer.country }})</p>
                     {% endif %}
                     {% if product.seller %}<p class="meta">Продавец: {{ product.seller.username }}</p>{% endif %}
+                    {% if product.tags.all %}
+                        <p class="meta">
+                            Теги:
+                            {% for tag in product.tags.all %}
+                                <a href="{% url 'products_by_tag' tag.slug %}" class="tag-chip">{{ tag.name }}</a>
+                            {% endfor %}
+                        </p>
+                    {% endif %}
                     <p><span class="status status-{{ product.status }}">{{ product.get_status_display }}</span></p>
                     <p class="price">{{ product.price }} ₽</p>
                     {% if user == product.seller %}

@@ -7,25 +7,14 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'image', 'category', 'manufacturer']
+        fields = ['name', 'description', 'price', 'image', 'category', 'manufacturer', 'tags']
         widgets = {
-            'name': forms.TextInput(attrs={
-                'placeholder': 'Например: Ноутбук',
-                'class': 'form-input',
-            }),
-            'description': forms.Textarea(attrs={
-                'placeholder': 'Краткое описание товара',
-                'rows': 3,
-                'class': 'form-input',
-            }),
-            'price': forms.NumberInput(attrs={
-                'placeholder': '0.00',
-                'step': '0.01',
-                'min': '0',
-                'class': 'form-input',
-            }),
+            'name': forms.TextInput(attrs={'placeholder': 'Например: Ноутбук', 'class': 'form-input'}),
+            'description': forms.Textarea(attrs={'placeholder': 'Краткое описание', 'rows': 3, 'class': 'form-input'}),
+            'price': forms.NumberInput(attrs={'placeholder': '0.00', 'step': '0.01', 'min': '0', 'class': 'form-input'}),
             'category': forms.Select(attrs={'class': 'form-input'}),
             'manufacturer': forms.Select(attrs={'class': 'form-input'}),
+            'tags': forms.CheckboxSelectMultiple(),
         }
         labels = {
             'name': 'Название товара',
@@ -34,6 +23,7 @@ class ProductForm(forms.ModelForm):
             'image': 'Изображение',
             'category': 'Категория',
             'manufacturer': 'Производитель',
+            'tags': 'Теги',
         }
 
     def clean_name(self):
