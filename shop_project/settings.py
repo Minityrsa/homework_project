@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Добавили
     
     'catalog',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -129,3 +130,6 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+LOGIN_REDIRECT_URL = 'profile'
+LOGIN_URL = 'login'
