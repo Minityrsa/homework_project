@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product
 from .forms import ProductForm
 
@@ -16,8 +16,41 @@ def product_add(request):
         if form.is_valid():
             form.save()
             return redirect('product_list')
-        # если форма невалидна — просто показываем её с ошибками
     else:
         form = ProductForm()
 
-    return render(request, 'catalog/product_form.html', {'form': form})
+    return render(request, 'catalog/product_form.html', {
+        'form': form,
+        'title': 'Добавить товар',
+        'button_text': 'Сохранить товар',
+    })
+
+
+def product_edit(request, pk):
+    """Страница редактирования товара"""
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('product_list')
+    else:
+        form = ProductForm(instance=product)
+
+    return render(request, 'catalog/product_form.html', {
+        'form': form,
+        'title': 'Редактировать товар',
+        'button_text': 'Сохранить изменения',
+    })
+
+
+def product_delete(request, pk):
+    """Страница удаления товара с подтверждением"""
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == 'POST':
+        product.delete()
+        return redirect('product_list')
+
+    return render(request, 'catalog/product_confirm_delete.html', {'product': product})
