@@ -82,6 +82,9 @@ class Product(models.Model):
         verbose_name="Производитель", null=True, blank=True,
     )
     tags = models.ManyToManyField(Tag, related_name='products', blank=True, verbose_name="Теги")
+    viewed_by_users = models.ManyToManyField(
+        User, related_name='viewed_products', blank=True, verbose_name="Просмотрено пользователями",
+    )
     status = models.CharField(
         max_length=20, choices=Status.choices,
         default=Status.PENDING, verbose_name="Статус",

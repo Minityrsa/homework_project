@@ -1,4 +1,4 @@
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
@@ -7,10 +7,11 @@ from .forms import ProductForm
 
 
 class ProductListView(ListView):
-    """Список всех товаров + фильтр по категориям"""
+    """Список всех товаров + фильтр по категориям + пагинация"""
     model = Product
     template_name = 'catalog/product_list.html'
     context_object_name = 'products'
+    paginate_by = 6
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -29,10 +30,11 @@ class ProductListView(ListView):
 
 
 class ProductByTagView(ListView):
-    """Товары по конкретному тегу"""
+    """Товары по конкретному тегу + пагинация"""
     model = Product
     template_name = 'catalog/product_list.html'
     context_object_name = 'products'
+    paginate_by = 6
 
     def get_queryset(self):
         self.tag = get_object_or_404(Tag, slug=self.kwargs['slug'])
@@ -43,6 +45,19 @@ class ProductByTagView(ListView):
         ctx['categories'] = Category.objects.all()
         ctx['current_tag'] = self.tag
         return ctx
+
+
+class ProductDetailView(DetailView):
+    """Страница просмотра товара (записывает пользователя в viewed_by_users)"""
+    model = Product
+    template_name = 'catalog/product_detail.html'
+    context_object_name = 'product'
+
+    def get_object(self, queryset=None):
+        product = super().get_object(queryset)
+        if self.request.user.is_authenticated:
+            product.viewed_by_users.add(self.request.user)
+        return product
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):

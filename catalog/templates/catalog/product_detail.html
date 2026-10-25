@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .back { display: inline-block; margin-bottom: 20px; color: #3498db; text-decoration: none; }
+        .product-detail { display: flex; gap: 30px; }
+        .product-image { width: 350px; height: 350px; object-fit: cover; border-radius: 12px; background: #f0f0f0; }
+        .product-info { flex: 1; }
+        h1 { color: #2c3e50; margin-top: 0; }
+        .meta { color: #888; font-size: 14px; margin: 6px 0; }
+        .price { color: #e74c3c; font-weight: bold; font-size: 32px; margin: 16px 0; }
+        .status { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: bold; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-published { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .tag-chip {
+            display: inline-block; padding: 3px 10px; border-radius: 12px;
+            background: #e0e7ff; color: #3730a3; text-decoration: none;
+            font-size: 12px; margin-right: 4px;
+        }
+        .actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-sm { padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none; display: inline-block; }
+        .btn-edit { background: #f39c12; color: white; }
+        .btn-delete { background: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+    <a href="{% url 'product_list' %}" class="back">← Назад к товарам</a>
+
+    <div class="product-detail">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        {% else %}
+            <div class="product-image" style="display:flex; align-items:center; justify-content:center; color:#bbb;">Нет фото</div>
+        {% endif %}
+
+        <div class="product-info">
+            <h1>{{ product.name }}</h1>
+            {% if product.description %}<p>{{ product.description }}</p>{% endif %}
+
+            <p><span class="status status-{{ product.status }}">{{ product.get_status_display }}</span></p>
+
+            {% if product.category %}<p class="meta">Категория: {{ product.category.name }}</p>{% endif %}
+            {% if product.manufacturer %}
+                <p class="meta">Производитель: {{ product.manufacturer.name }} ({{ product.manufacturer.country }})</p>
+            {% endif %}
+            {% if product.seller %}<p class="meta">Продавец: {{ product.seller.username }}</p>{% endif %}
+
+            {% if product.tags.all %}
+                <p class="meta">
+                    Теги:
+                    {% for tag in product.tags.all %}
+                        <a href="{% url 'products_by_tag' tag.slug %}" class="tag-chip">{{ tag.name }}</a>
+                    {% endfor %}
+                </p>
+            {% endif %}
+
+            <p class="price">{{ product.price }} ₽</p>
+
+            {% if user == product.seller %}
+                <div class="actions">
+                    <a href="{% url 'product_edit' product.pk %}" class="btn-sm btn-edit">✏️ Редактировать</a>
+                    <a href="{% url 'product_delete' product.pk %}" class="btn-sm btn-delete">🗑️ Удалить</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

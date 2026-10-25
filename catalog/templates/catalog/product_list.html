@@ -30,6 +30,8 @@
         .product-image { width: 120px; height: 120px; object-fit: cover; border-radius: 6px; background: #f0f0f0; flex-shrink: 0; }
         .product-info { flex: 1; }
         .product h3 { margin: 0 0 8px; color: #2c3e50; }
+        .product h3 a { color: #2c3e50; text-decoration: none; }
+        .product h3 a:hover { color: #3498db; }
         .meta { color: #888; font-size: 13px; margin: 4px 0; }
         .price { color: #e74c3c; font-weight: bold; font-size: 18px; margin: 8px 0; }
         .status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
@@ -41,6 +43,14 @@
         .btn-edit { background: #f39c12; color: white; }
         .btn-delete { background: #e74c3c; color: white; }
         .empty { color: #888; font-style: italic; }
+        .pagination { display: flex; justify-content: center; gap: 6px; margin-top: 30px; flex-wrap: wrap; }
+        .page-link {
+            padding: 8px 14px; border-radius: 6px; text-decoration: none;
+            background: #ecf0f1; color: #2c3e50; font-size: 14px;
+        }
+        .page-link:hover { background: #d5dbdb; }
+        .page-link.current { background: #3498db; color: white; }
+        .page-info { text-align: center; color: #888; font-size: 13px; margin-top: 12px; }
     </style>
 </head>
 <body>
@@ -74,13 +84,15 @@
     {% if products %}
         {% for product in products %}
             <div class="product">
-                {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                {% else %}
-                    <div class="product-image" style="display:flex; align-items:center; justify-content:center; color:#bbb;">Нет фото</div>
-                {% endif %}
+                <a href="{% url 'product_detail' product.pk %}">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                        <div class="product-image" style="display:flex; align-items:center; justify-content:center; color:#bbb;">Нет фото</div>
+                    {% endif %}
+                </a>
                 <div class="product-info">
-                    <h3>{{ product.name }}</h3>
+                    <h3><a href="{% url 'product_detail' product.pk %}">{{ product.name }}</a></h3>
                     {% if product.description %}<p>{{ product.description }}</p>{% endif %}
                     {% if product.category %}<p class="meta">Категория: {{ product.category.name }}</p>{% endif %}
                     {% if product.manufacturer %}
@@ -106,6 +118,28 @@
                 </div>
             </div>
         {% endfor %}
+
+        {# Пагинация #}
+        {% if is_paginated %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category.slug }}{% endif %}" class="page-link">← Назад</a>
+                {% endif %}
+
+                {% for num in paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <span class="page-link current">{{ num }}</span>
+                    {% else %}
+                        <a href="?page={{ num }}{% if current_category %}&category={{ current_category.slug }}{% endif %}" class="page-link">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category.slug }}{% endif %}" class="page-link">Вперёд →</a>
+                {% endif %}
+            </div>
+            <p class="page-info">Страница {{ page_obj.number }} из {{ paginator.num_pages }}</p>
+        {% endif %}
     {% else %}
         <p class="empty">Пока товаров нет. {% if user.is_authenticated %}Нажмите «Добавить».{% else %}Войдите, чтобы добавить товар.{% endif %}</p>
     {% endif %}
