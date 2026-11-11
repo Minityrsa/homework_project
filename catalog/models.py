@@ -85,6 +85,11 @@ class Product(models.Model):
     viewed_by_users = models.ManyToManyField(
         User, related_name='viewed_products', blank=True, verbose_name="Просмотрено пользователями",
     )
+    
+    favorited_by = models.ManyToManyField(
+        User, related_name='favorite_products', blank=True, verbose_name="В избранном у",
+    )
+    
     status = models.CharField(
         max_length=20, choices=Status.choices,
         default=Status.PENDING, verbose_name="Статус",

@@ -99,3 +99,24 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('product_list')
     context_object_name = 'product'
+
+
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.views import View
+
+
+class ToggleFavoriteView(LoginRequiredMixin, View):
+    """Добавить/убрать товар из избранного"""
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+
+        if request.user in product.favorited_by.all():
+            product.favorited_by.remove(request.user)
+            messages.info(request, f"«{product.name}» убран из избранного")
+        else:
+            product.favorited_by.add(request.user)
+            messages.success(request, f"«{product.name}» добавлен в избранное ⭐")
+
+        return redirect(request.META.get('HTTP_REFERER', 'product_list'))

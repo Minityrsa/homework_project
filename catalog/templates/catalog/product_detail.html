@@ -21,14 +21,37 @@
             background: #e0e7ff; color: #3730a3; text-decoration: none;
             font-size: 12px; margin-right: 4px;
         }
-        .actions { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-sm { padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none; display: inline-block; }
+        .actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .btn-sm { padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none; display: inline-block; border: none; cursor: pointer; font-family: inherit; }
         .btn-edit { background: #f39c12; color: white; }
         .btn-delete { background: #e74c3c; color: white; }
+        .btn-fav { background: #ecf0f1; color: #2c3e50; }
+        .btn-fav:hover { background: #d5dbdb; }
+        .btn-fav-active { background: #fbbf24; color: #78350f; }
+        .btn-fav-active:hover { background: #f59e0b; }
+
+        /* Flash-сообщения */
+        .messages { margin-bottom: 20px; }
+        .alert {
+            padding: 12px 20px; border-radius: 6px; margin-bottom: 10px;
+            font-size: 15px; font-weight: 500;
+        }
+        .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+        .alert-info { background: #dbeafe; color: #1e40af; border-left: 4px solid #3b82f6; }
+        .alert-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+        .alert-error { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
     </style>
 </head>
 <body>
     <a href="{% url 'product_list' %}" class="back">← Назад к товарам</a>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="product-detail">
         {% if product.image %}
@@ -60,12 +83,22 @@
 
             <p class="price">{{ product.price }} ₽</p>
 
-            {% if user == product.seller %}
-                <div class="actions">
+            <div class="actions">
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'toggle_favorite' product.pk %}" style="display:inline; margin:0;">
+                        {% csrf_token %}
+                        {% if user in product.favorited_by.all %}
+                            <button type="submit" class="btn-sm btn-fav-active">💔 Убрать из избранного</button>
+                        {% else %}
+                            <button type="submit" class="btn-sm btn-fav">⭐ В избранное</button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+                {% if user == product.seller %}
                     <a href="{% url 'product_edit' product.pk %}" class="btn-sm btn-edit">✏️ Редактировать</a>
                     <a href="{% url 'product_delete' product.pk %}" class="btn-sm btn-delete">🗑️ Удалить</a>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
 </body>
